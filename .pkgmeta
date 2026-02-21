@@ -1,3 +1,5 @@
+package-as: CraftFlash
+
 ignore:
   - .github
   - .gitignore
