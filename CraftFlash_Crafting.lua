@@ -3,6 +3,7 @@ local batchTimer = nil
 local craftCount = 0
 local totalQueued = 0
 local castDuration = 0
+local craftingSpell = nil
 
 -- Seconds to wait after last successful craft before assuming the batch is done
 local BATCH_DELAY = 1.5
@@ -72,6 +73,22 @@ local function IsTradeskillOpen()
         or (CraftFrame and CraftFrame:IsShown())
 end
 
+-- Get the name of the selected recipe in the open tradeskill/craft window
+local function GetSelectedRecipeName()
+    if TradeSkillFrame and TradeSkillFrame:IsShown() then
+        local index = GetTradeSkillSelectionIndex()
+        if index and index > 0 then
+            return GetTradeSkillInfo(index)
+        end
+    elseif CraftFrame and CraftFrame:IsShown() then
+        local index = GetCraftSelectionIndex()
+        if index and index > 0 then
+            return GetCraftInfo(index)
+        end
+    end
+    return nil
+end
+
 local function CancelBatchTimer()
     if batchTimer then
         batchTimer:Cancel()
@@ -99,6 +116,7 @@ local function OnBatchDone()
     craftCount = 0
     totalQueued = 0
     castDuration = 0
+    craftingSpell = nil
     GetOverlay():Hide()
 end
 
@@ -113,6 +131,22 @@ frame:SetScript("OnEvent", function(self, event, ...)
     if event == "UNIT_SPELLCAST_START" then
         local unitTarget = ...
         if unitTarget == "player" and IsTradeskillOpen() then
+            local castName = UnitCastingInfo("player")
+
+            if isCrafting then
+                -- Mid-batch: only count casts matching the original spell
+                if castName ~= craftingSpell then
+                    return
+                end
+            else
+                -- First cast: verify it matches the selected recipe
+                local recipeName = GetSelectedRecipeName()
+                if not recipeName or castName ~= recipeName then
+                    return
+                end
+                craftingSpell = castName
+            end
+
             isCrafting = true
             CancelBatchTimer()
 
@@ -137,7 +171,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
 
     elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
         local unitTarget = ...
-        if unitTarget == "player" and isCrafting then
+        -- Only count if the completed cast matches the tracked crafting spell
+        local castName = select(2, ...)
+        if unitTarget == "player" and isCrafting and (not craftingSpell or not castName or castName == craftingSpell) then
             craftCount = craftCount + 1
             UpdateOverlay()
             ResetBatchTimer()
