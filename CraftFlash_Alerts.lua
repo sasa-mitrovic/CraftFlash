@@ -1,12 +1,10 @@
 local frame = CreateFrame("Frame")
 
 frame:SetScript("OnEvent", function(self, event, ...)
-    -- Auction sold / outbid
+    -- Auction sold
     if event == "CHAT_MSG_SYSTEM" then
         local message = ...
         if CraftFlashDB.auctionSold and message:find(ERR_AUCTION_SOLD_S:gsub("%%s", ".+")) then
-            CraftFlash_Notify()
-        elseif CraftFlashDB.auctionOutbid and message:find(ERR_AUCTION_OUTBID_S:gsub("%%s", ".+")) then
             CraftFlash_Notify()
         end
 

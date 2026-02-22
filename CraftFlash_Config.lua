@@ -44,12 +44,19 @@ local cb4 = CreateToggle(panel, cb3, -4, "craftAutoClose", "Auto-close tradeskil
 -- Alerts section
 local alertHeader = CreateHeader(panel, cb4, -16, "Alerts")
 local cb5 = CreateToggle(panel, alertHeader, -4, "auctionSold", "Flash when an auction sells")
-local cb6 = CreateToggle(panel, cb5, -4, "auctionOutbid", "Flash when outbid on an auction")
-local cb7 = CreateToggle(panel, cb6, -4, "rareSpawn", "Flash when a rare spawn appears on nameplates")
+local cb7 = CreateToggle(panel, cb5, -4, "rareSpawn", "Flash when a rare spawn appears on nameplates")
 local cb8 = CreateToggle(panel, cb7, -4, "summonRequest", "Flash on summon request")
 local cb9 = CreateToggle(panel, cb8, -4, "readyCheck", "Flash on ready check")
 local cb10 = CreateToggle(panel, cb9, -4, "resurrect", "Flash on resurrect request")
 local cb11 = CreateToggle(panel, cb10, -4, "tradeRequest", "Flash when a trade window opens")
 local cb12 = CreateToggle(panel, cb11, -4, "bgQueuePop", "Flash when a battleground queue pops")
 
-InterfaceOptions_AddCategory(panel)
+-- Register with Interface Options (handle both old and new API)
+if Settings and Settings.RegisterCanvasLayoutCategory then
+    local category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
+    Settings.RegisterAddOnCategory(category)
+    -- Store for slash command
+    CraftFlash_SettingsCategory = category
+else
+    InterfaceOptions_AddCategory(panel)
+end

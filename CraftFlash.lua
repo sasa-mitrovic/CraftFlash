@@ -9,7 +9,6 @@ local defaults = {
     craftAutoClose = false,
     -- Alerts
     auctionSold = true,
-    auctionOutbid = true,
     rareSpawn = true,
     summonRequest = true,
     readyCheck = true,
@@ -47,7 +46,11 @@ end)
 SLASH_CRAFTFLASH1 = "/craftflash"
 SLASH_CRAFTFLASH2 = "/cf"
 SlashCmdList["CRAFTFLASH"] = function()
-    -- Double call is a Blizzard bug workaround to ensure the panel opens correctly
-    InterfaceOptionsFrame_OpenToCategory("CraftFlash")
-    InterfaceOptionsFrame_OpenToCategory("CraftFlash")
+    if Settings and Settings.OpenToCategory and CraftFlash_SettingsCategory then
+        Settings.OpenToCategory(CraftFlash_SettingsCategory:GetID())
+    elseif InterfaceOptionsFrame_OpenToCategory then
+        -- Double call is a Blizzard bug workaround to ensure the panel opens correctly
+        InterfaceOptionsFrame_OpenToCategory("CraftFlash")
+        InterfaceOptionsFrame_OpenToCategory("CraftFlash")
+    end
 end

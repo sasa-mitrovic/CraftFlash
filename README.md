@@ -13,7 +13,6 @@ A World of Warcraft TBC Classic addon that flashes your Windows taskbar icon for
 ### Alert Triggers
 All of the following flash your taskbar when they occur:
 - **Auction sold** — an item you listed on the AH sells
-- **Auction outbid** — you've been outbid on an auction
 - **Rare spawn** — a rare or rare-elite mob appears on your nameplates
 - **Summon request** — a warlock summon or meeting stone summon
 - **Ready check** — a raid/party leader starts a ready check

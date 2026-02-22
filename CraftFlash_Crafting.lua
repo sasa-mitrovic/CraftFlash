@@ -7,31 +7,47 @@ local castDuration = 0
 -- Seconds to wait after last successful craft before assuming the batch is done
 local BATCH_DELAY = 1.5
 
--- Progress overlay frame
-local overlay = CreateFrame("Frame", "CraftFlashOverlay", UIParent)
-overlay:SetSize(200, 20)
-overlay:Hide()
+-- Progress overlay frame (created lazily once the tradeskill frame exists)
+local overlay = nil
+local overlayText = nil
 
-local overlayText = overlay:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-overlayText:SetAllPoints()
-overlayText:SetJustifyH("CENTER")
+local function GetOverlay()
+    if overlay then return overlay end
+
+    -- Parent to whichever tradeskill frame is available so it inherits strata/level
+    local parent = TradeSkillFrame or CraftFrame or UIParent
+    overlay = CreateFrame("Frame", "CraftFlashOverlay", parent)
+    overlay:SetSize(250, 20)
+    overlay:SetFrameStrata("HIGH")
+    overlay:Hide()
+
+    overlayText = overlay:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    overlayText:SetAllPoints()
+    overlayText:SetJustifyH("CENTER")
+
+    return overlay
+end
 
 local function AnchorOverlay()
-    overlay:ClearAllPoints()
+    local ov = GetOverlay()
+    ov:ClearAllPoints()
     if TradeSkillFrame and TradeSkillFrame:IsShown() then
-        overlay:SetPoint("TOP", TradeSkillFrame, "TOP", 0, -50)
-        overlay:Show()
+        ov:SetParent(TradeSkillFrame)
+        ov:SetPoint("BOTTOM", TradeSkillFrame, "TOP", 0, 4)
+        ov:Show()
     elseif CraftFrame and CraftFrame:IsShown() then
-        overlay:SetPoint("TOP", CraftFrame, "TOP", 0, -50)
-        overlay:Show()
+        ov:SetParent(CraftFrame)
+        ov:SetPoint("BOTTOM", CraftFrame, "TOP", 0, 4)
+        ov:Show()
     else
-        overlay:Hide()
+        ov:Hide()
     end
 end
 
 local function UpdateOverlay()
+    local ov = GetOverlay()
     if not CraftFlashDB.craftProgress then
-        overlay:Hide()
+        ov:Hide()
         return
     end
 
@@ -83,7 +99,7 @@ local function OnBatchDone()
     craftCount = 0
     totalQueued = 0
     castDuration = 0
-    overlay:Hide()
+    GetOverlay():Hide()
 end
 
 local function ResetBatchTimer()
@@ -145,7 +161,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
             -- Window closed mid-batch, treat as done
             OnBatchDone()
         end
-        overlay:Hide()
+        GetOverlay():Hide()
     end
 end)
 
