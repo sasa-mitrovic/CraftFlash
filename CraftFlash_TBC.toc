@@ -1,8 +1,12 @@
 ## Interface: 20504
 ## Title: CraftFlash
-## Notes: Flashes the taskbar icon when a crafting batch completes or is interrupted by a full inventory.
+## Notes: Flashes the taskbar icon for crafting completions, auction updates, rare spawns, and other game events.
 ## Author: sasam
-## Version: 1.0.0
+## Version: 2.0.0
+## SavedVariables: CraftFlashDB
 ## X-Curse-Project-ID: 1468426
 
 CraftFlash.lua
+CraftFlash_Crafting.lua
+CraftFlash_Alerts.lua
+CraftFlash_Config.lua
