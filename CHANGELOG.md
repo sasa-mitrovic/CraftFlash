@@ -1,3 +1,10 @@
+# v2.0.1
+
+- Fixed overlay counting unrelated spells (e.g., Disenchant) while a tradeskill window is open
+- Fixed clicking a different recipe mid-batch breaking the progress tracker
+- Fixed config panel error on newer Classic builds (Settings API compatibility)
+- Fixed overlay not showing by reparenting to the tradeskill frame with correct strata
+
 # v2.0.0
 
 - Added crafting batch progress overlay showing "5/20 crafted" on the tradeskill window
